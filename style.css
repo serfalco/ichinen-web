@@ -1,0 +1,192 @@
+/* ===========================================================
+   LIBRERÍA ICHINÉN — estilos
+   Paleta:  bordó #B31217 · azul #2459A8 · amarillo #E0B52B
+            papel #F6F2E8 · tinta #222222
+   Tipos:   Cinzel (títulos) · Lora (texto)
+   =========================================================== */
+
+:root{
+  --bordo:#B31217;
+  --bordo-osc:#7a0c10;
+  --azul:#2459A8;
+  --amarillo:#E0B52B;
+  --papel:#F6F2E8;
+  --papel-2:#efe9d9;
+  --tinta:#222222;
+  --tinta-suave:#5b5648;
+  --linea:#d8cfb8;
+  --max:1140px;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--papel);
+  color:var(--tinta);
+  font-family:'Lora',Georgia,serif;
+  font-size:18px;
+  line-height:1.65;
+}
+img{max-width:100%;display:block;}
+a{color:var(--bordo);text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+h1,h2,h3{
+  font-family:'Cinzel',serif;
+  color:var(--tinta);
+  line-height:1.2;
+  margin:0 0 .4em;
+  font-weight:600;
+}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
+
+/* ---- guiño tricolor: línea fina azul·amarillo·rojo ---- */
+.tricolor{
+  height:4px;border:0;margin:0;
+  background:linear-gradient(90deg,
+    var(--azul) 0 33.33%,
+    var(--amarillo) 33.33% 66.66%,
+    var(--bordo) 66.66% 100%);
+}
+.tricolor--short{width:84px;height:3px;margin:14px auto 0;border-radius:2px;}
+
+/* =================== HEADER =================== */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(246,242,232,.94);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--linea);
+}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:68px;gap:20px;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand img{height:38px;width:auto;}
+.brand span{font-family:'Cinzel',serif;font-weight:700;color:var(--bordo);font-size:1.05rem;letter-spacing:1px;}
+.nav{display:flex;gap:26px;}
+.nav a{color:var(--tinta);font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:1px;text-transform:uppercase;}
+.nav a:hover{color:var(--bordo);text-decoration:none;}
+.menu-btn{display:none;background:none;border:0;font-size:1.6rem;color:var(--bordo);cursor:pointer;}
+
+/* =================== HERO =================== */
+.hero{
+  background:
+    linear-gradient(rgba(246,242,232,.86),rgba(246,242,232,.92)),
+    url('../img/interior.jpg') center/cover no-repeat;
+  border-bottom:1px solid var(--linea);
+}
+.hero .wrap{
+  display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;
+  padding:64px 24px 72px;
+}
+.hero-logo{max-width:340px;margin-bottom:8px;}
+.hero h1{font-size:2.5rem;color:var(--bordo);}
+.hero p.lead{font-size:1.15rem;color:var(--tinta-suave);max-width:30ch;}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;}
+.hero-photo{
+  border:1px solid var(--linea);
+  box-shadow:0 14px 34px rgba(34,20,8,.16);
+  background:var(--papel-2);
+  aspect-ratio:4/3;object-fit:cover;width:100%;
+}
+
+/* =================== BOTONES =================== */
+.btn{
+  display:inline-block;font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:1.5px;
+  text-transform:uppercase;padding:13px 26px;border:1.5px solid var(--bordo);
+  cursor:pointer;transition:.18s;
+}
+.btn--solid{background:var(--bordo);color:#fff;}
+.btn--solid:hover{background:var(--bordo-osc);border-color:var(--bordo-osc);text-decoration:none;}
+.btn--ghost{background:transparent;color:var(--bordo);}
+.btn--ghost:hover{background:var(--bordo);color:#fff;text-decoration:none;}
+.btn--wa{border-color:#1f8a4c;color:#fff;background:#1f8a4c;}
+.btn--wa:hover{background:#176c3b;border-color:#176c3b;text-decoration:none;}
+
+/* =================== SECCIONES =================== */
+.section{padding:70px 0;}
+.section--alt{background:var(--papel-2);border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);}
+.eyebrow{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--azul);margin-bottom:10px;}
+.section h2{font-size:1.9rem;}
+.center{text-align:center;}
+
+/* ---- Diego recomienda ---- */
+.diego{display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;align-items:center;}
+.diego-quote{
+  font-size:1.35rem;font-style:italic;color:var(--tinta);
+  border-left:3px solid var(--amarillo);padding-left:22px;line-height:1.5;
+}
+.diego-quote cite{display:block;font-style:normal;font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:1px;color:var(--tinta-suave);margin-top:14px;text-transform:uppercase;}
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.rec-card{background:var(--papel);border:1px solid var(--linea);padding:14px;text-align:center;}
+.rec-card .cover{aspect-ratio:2/3;width:100%;object-fit:cover;background:var(--papel-2);margin-bottom:10px;border:1px solid var(--linea);}
+.rec-card .t{font-family:'Cinzel',serif;font-size:.82rem;color:var(--tinta);line-height:1.3;}
+.rec-card .a{font-size:.8rem;color:var(--tinta-suave);font-style:italic;}
+
+/* ---- Categorías ---- */
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:30px;}
+.cat{
+  position:relative;display:block;padding:34px 24px;min-height:140px;
+  background:var(--papel);border:1px solid var(--linea);
+  color:var(--tinta);overflow:hidden;transition:.18s;
+}
+.cat::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--c,var(--bordo));}
+.cat:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(34,20,8,.12);text-decoration:none;}
+.cat .n{display:block;font-family:'Cinzel',serif;font-size:1.25rem;color:var(--tinta);}
+.cat .d{display:block;font-size:.92rem;color:var(--tinta-suave);margin-top:6px;}
+
+/* ---- Espíritu ---- */
+.espiritu{max-width:680px;margin:0 auto;text-align:center;}
+.espiritu p{font-size:1.3rem;line-height:1.7;color:var(--tinta);}
+.espiritu strong{color:var(--bordo);font-weight:600;}
+
+/* ---- Vendénos ---- */
+.vender{display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center;}
+.vender p{font-size:1.15rem;color:var(--tinta-suave);margin:0;max-width:46ch;}
+
+/* ---- Instagram (solo info + link) ---- */
+.ig{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center;flex-direction:column;}
+.ig .handle{font-family:'Cinzel',serif;font-size:1.4rem;color:var(--bordo);}
+
+/* ---- Visitanos ---- */
+.visit{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+.visit .data p{margin:.2em 0;}
+.visit .data .label{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--azul);margin-top:18px;}
+.map-embed{width:100%;aspect-ratio:4/3;border:1px solid var(--linea);}
+
+/* =================== FOOTER =================== */
+.footer{background:var(--tinta);color:#e9e4d6;padding:48px 0 30px;}
+.footer .wrap{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start;}
+.footer a{color:var(--amarillo);}
+.footer .f-brand{font-family:'Cinzel',serif;color:#fff;font-size:1.1rem;letter-spacing:1px;}
+.footer small{color:#b8b2a2;}
+.footer .frase{font-family:'Cinzel',serif;font-style:normal;color:var(--amarillo);font-size:1rem;letter-spacing:1px;margin-top:20px;display:block;text-align:center;width:100%;border-top:1px solid #3a3a33;padding-top:22px;}
+
+/* =================== RESPONSIVE =================== */
+@media(max-width:860px){
+  .nav{display:none;position:absolute;top:68px;left:0;right:0;background:var(--papel);
+       flex-direction:column;gap:0;border-bottom:1px solid var(--linea);}
+  .nav.open{display:flex;}
+  .nav a{padding:14px 24px;border-top:1px solid var(--linea);}
+  .menu-btn{display:block;}
+  .hero .wrap{grid-template-columns:1fr;gap:32px;padding:44px 24px 52px;text-align:center;}
+  .hero h1{font-size:2rem;}
+  .hero-logo{margin-left:auto;margin-right:auto;}
+  .hero .tricolor--short{margin-left:auto;margin-right:auto;}
+  .hero p.lead{max-width:none;}
+  .hero-actions{justify-content:center;}
+  .hero-photo{max-width:480px;margin:0 auto;}
+  .diego,.vender,.visit{grid-template-columns:1fr;gap:28px;}
+  .rec-grid,.cats{grid-template-columns:1fr 1fr;}
+  .vender{text-align:center;}
+}
+@media(max-width:520px){
+  body{font-size:17px;}
+  .rec-grid,.cats{grid-template-columns:1fr;}
+  .hero h1{font-size:1.7rem;}
+  .footer .wrap{flex-direction:column;}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;scroll-behavior:auto!important;}
+}

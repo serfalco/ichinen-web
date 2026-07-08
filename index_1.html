@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Subir catálogo — Librería Ichinén</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--bordo:#B31217;--bordo-osc:#7a0c10;--azul:#2459A8;--amarillo:#E0B52B;
+    --papel:#F6F2E8;--papel2:#efe9d9;--linea:#d8cfb8;--tinta:#222;--suave:#5b5648;--verde:#1f8a4c;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--papel);color:var(--tinta);font-family:'Lora',Georgia,serif;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .caja{background:#fff;border:1px solid var(--linea);max-width:460px;width:100%;
+    padding:0 0 34px;box-shadow:0 14px 40px rgba(34,20,8,.12);}
+  .tri{height:5px;background:linear-gradient(90deg,var(--azul) 0 33.33%,var(--amarillo) 33.33% 66.66%,var(--bordo) 66.66% 100%);}
+  .cab{text-align:center;padding:32px 30px 8px;}
+  .cab .marca{font-family:'Cinzel',serif;font-weight:700;color:var(--bordo);font-size:1.5rem;letter-spacing:2px;line-height:1;}
+  .cab .lib{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--suave);margin-top:6px;}
+  .cuerpo{padding:18px 34px 0;}
+  h1{font-family:'Cinzel',serif;color:var(--tinta);font-size:1.05rem;margin:0 0 4px;font-weight:600;}
+  p.sub{color:var(--suave);margin:0 0 22px;font-size:.92rem;font-style:italic;}
+  label.campo{display:block;font-family:'Cinzel',serif;font-size:.66rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--azul);margin-bottom:9px;}
+  input[type=password]{width:100%;padding:13px 14px;border:1.5px solid var(--linea);background:var(--papel);font-family:'Lora',serif;font-size:15px;margin-bottom:20px;}
+  input[type=password]:focus{outline:none;border-color:var(--azul);}
+  .drop{border:2px dashed var(--linea);background:var(--papel);padding:26px 16px;text-align:center;
+    cursor:pointer;margin-bottom:20px;transition:.15s;}
+  .drop:hover,.drop.over{border-color:var(--bordo);background:var(--papel2);}
+  .drop .ico{font-size:2rem;color:var(--bordo);line-height:1;}
+  .drop .txt{font-size:.92rem;color:var(--suave);margin-top:8px;}
+  .drop .nombre{font-family:'Cinzel',serif;font-size:.8rem;color:var(--tinta);margin-top:10px;word-break:break-all;}
+  input[type=file]{display:none;}
+  button{width:100%;font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;
+    padding:15px;border:0;background:var(--bordo);color:#fff;cursor:pointer;transition:.15s;}
+  button:hover{background:var(--bordo-osc);}
+  button:disabled{background:var(--linea);color:#fff;cursor:default;}
+  .msg{padding:13px 15px;margin-bottom:20px;font-size:.92rem;border:1px solid;line-height:1.5;}
+  .msg.ok{background:#eaf6ee;border-color:#9ed6b3;color:#1f6c3b;}
+  .msg.error{background:#fbeaea;border-color:#e2a3a3;color:#a32d2d;}
+  .pie{text-align:center;margin-top:20px;}
+  .pie a{font-size:.78rem;color:var(--suave);text-decoration:none;}
+  .pie a:hover{color:var(--bordo);}
+  .ayuda{font-size:.84rem;color:var(--suave);margin-top:16px;line-height:1.55;text-align:center;}
+
+  /* ---- prelimpieza ---- */
+  #estado{font-size:.86rem;color:var(--suave);font-style:italic;text-align:center;margin:0 0 16px;}
+  .tarjetas{display:flex;flex-direction:column;gap:11px;margin-bottom:18px;}
+  .tar{background:var(--papel);border:1px solid var(--linea);border-radius:8px;
+    padding:13px;display:flex;gap:11px;align-items:flex-start;transition:.15s;}
+  .tar.on{border-color:var(--bordo);}
+  .tar .bx{appearance:none;-webkit-appearance:none;width:20px;height:20px;flex:0 0 auto;
+    border:2px solid var(--suave);border-radius:5px;background:#fff;cursor:pointer;
+    display:grid;place-content:center;transition:.15s;margin-top:2px;}
+  .tar .bx:checked{background:var(--bordo);border-color:var(--bordo);}
+  .tar .bx:checked::after{content:"";width:5px;height:10px;border:solid #fff;
+    border-width:0 2.5px 2.5px 0;transform:rotate(45deg);margin-top:-2px;}
+  .tar .cont{flex:1;min-width:0;}
+  .tar .ti{font-family:'Cinzel',serif;font-size:.92rem;display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;}
+  .tar .et{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.08em;text-transform:uppercase;
+    padding:2px 6px;border-radius:20px;font-weight:600;}
+  .tar .et.safe{background:rgba(31,138,76,.13);color:var(--verde);}
+  .tar .et.care{background:rgba(224,181,43,.2);color:#9a7a10;}
+  .tar .nu{font-size:.74rem;color:var(--suave);font-style:italic;margin:2px 0 0;}
+  .tar .de{font-size:.82rem;color:var(--suave);margin:4px 0 0;line-height:1.45;}
+  .prev{padding:11px 13px;border-radius:8px;background:rgba(36,89,168,.07);
+    border:1px solid rgba(36,89,168,.2);font-size:.86rem;margin-bottom:18px;}
+  .prev b{font-family:'Cinzel',serif;color:var(--azul);}
+  .prev .gn{color:var(--bordo);font-style:italic;font-size:.8rem;}
+  .btn-sec{background:transparent;color:var(--tinta);border:1.5px solid var(--linea);margin-top:10px;}
+  .btn-sec:hover{background:var(--papel2);border-color:var(--suave);}
+  .oculto{display:none;}
+</style>
+</head>
+<body>
+<div class="caja">
+  <div class="tri"></div>
+  <div class="cab">
+    <div class="marca">ICHINÉN</div>
+    <div class="lib">Librería · Panel</div>
+  </div>
+  <div class="cuerpo">
+
+  <div id="msg" class="msg oculto"></div>
+
+  <h1>Subir el catálogo</h1>
+  <p class="sub">Poné la contraseña y elegí el Excel descargado de Mercado Libre.</p>
+
+  <form id="form">
+    <label class="campo">Contraseña</label>
+    <input type="password" name="clave" id="clave" autocomplete="current-password" required>
+
+    <label class="campo">Archivo del catálogo</label>
+    <div class="drop" id="drop">
+      <div class="ico">↑</div>
+      <div class="txt">Arrastrá el archivo acá<br>o tocá para elegirlo</div>
+      <div class="nombre" id="nombre"></div>
+    </div>
+    <input type="file" name="archivo" id="archivo" accept=".xlsx" required>
+    <input type="hidden" name="limpiado" id="limpiado" value="0">
+
+    <!-- estado del análisis -->
+    <p id="estado" class="oculto"></p>
+
+    <!-- reporte de prelimpieza (se llena por JS) -->
+    <div id="reporte" class="oculto">
+      <div class="tarjetas">
+        <label class="tar on" id="t-tapas">
+          <input type="checkbox" class="bx" id="ck-tapas" checked>
+          <span class="cont">
+            <span class="ti">Tapas equivocadas <span class="et safe">Seguro</span></span>
+            <p class="nu"><span id="n-tapas">0</span> libros afectados</p>
+            <p class="de">Código de barras repetido que muestra la tapa de otro libro. No borra ningún libro.</p>
+          </span>
+        </label>
+        <label class="tar on" id="t-iden">
+          <input type="checkbox" class="bx" id="ck-iden" checked>
+          <span class="cont">
+            <span class="ti">Fichas repetidas <span class="et safe">Seguro</span></span>
+            <p class="nu"><span id="n-iden">0</span> fichas idénticas</p>
+            <p class="de">El mismo libro cargado más de una vez, igual en todo. Dejo una sola.</p>
+          </span>
+        </label>
+        <label class="tar" id="t-pos">
+          <input type="checkbox" class="bx" id="ck-pos">
+          <span class="cont">
+            <span class="ti">Posibles repetidos <span class="et care">Revisar</span></span>
+            <p class="nu"><span id="n-pos">0</span> con mismo título y autor</p>
+            <p class="de">Muchos pueden ser ejemplares distintos, sobre todo historietas. Si lo tildás, dejo una sola ficha de cada grupo.</p>
+          </span>
+        </label>
+      </div>
+      <div class="prev"><span>Quedarían <b id="p-quedan">0</b> libros.</span>
+        <span class="gn" id="p-saco"></span></div>
+    </div>
+
+    <button type="submit" id="btn" disabled>Subir catálogo</button>
+    <button type="button" id="btn-limpiar" class="btn-sec oculto">Limpiar y subir</button>
+  </form>
+  <p class="ayuda">Tiene que ser un archivo <strong>.xlsx</strong>. Se guarda con el nombre correcto automáticamente. La limpieza es opcional: si no querés tocar nada, subí directo.</p>
+
+  </div>
+</div>
+
+<script src="xlsx.full.min.js"></script>
+<script src="prelimpieza.js"></script>
+<script>
+  var ENDPOINT = "/admin/api";
+  var drop=document.getElementById('drop'), input=document.getElementById('archivo'),
+      nombre=document.getElementById('nombre'), btn=document.getElementById('btn'),
+      form=document.getElementById('form'), clave=document.getElementById('clave'),
+      cajaMsg=document.getElementById('msg');
+
+  function mostrarMsg(texto, tipo){
+    cajaMsg.textContent=texto;
+    cajaMsg.className='msg '+(tipo||'ok');
+  }
+
+  drop.addEventListener('click',function(){input.click();});
+  ['dragover','dragenter'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.add('over');});});
+  ['dragleave','drop'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove('over');});});
+  drop.addEventListener('drop',function(ev){if(ev.dataTransfer.files.length){input.files=ev.dataTransfer.files;mostrar();}});
+  input.addEventListener('change',mostrar);
+  function mostrar(){
+    if(input.files.length){nombre.textContent=input.files[0].name;btn.disabled=false;analizar(input.files[0]);}
+    else{nombre.textContent='';btn.disabled=true;}
+  }
+
+  // ===== ENVÍO =====
+  // "Subir catálogo": manda el archivo original tal cual.
+  form.addEventListener('submit',function(ev){
+    ev.preventDefault();
+    if(!input.files.length){ mostrarMsg('Elegí un archivo primero.','error'); return; }
+    var fd=new FormData();
+    fd.append('clave', clave.value);
+    fd.append('archivo', input.files[0], input.files[0].name);
+    fd.append('limpiado','0');
+    enviar(fd, btn, 'Subir catálogo');
+  });
+
+  function enviar(fd, boton, textoOriginal){
+    boton.disabled=true; var t=boton.textContent; boton.textContent='Subiendo…';
+    cajaMsg.classList.add('oculto');
+    fetch(ENDPOINT, {method:'POST', body:fd})
+      .then(function(r){ return r.json().then(function(j){return {ok:r.ok, j:j};}); })
+      .then(function(res){
+        mostrarMsg(res.j.mensaje || (res.ok?'Listo.':'Hubo un problema.'), res.ok?'ok':'error');
+        boton.textContent=textoOriginal||t;
+        if(res.ok){ input.value=''; nombre.textContent=''; ocultarReporte(); btn.disabled=true;
+          if($('btn-limpiar')) $('btn-limpiar').classList.add('oculto'); }
+        else { boton.disabled=false; }
+        window.scrollTo(0,0);
+      })
+      .catch(function(){
+        mostrarMsg('No se pudo subir. Revisá la conexión y probá de nuevo.','error');
+        boton.disabled=false; boton.textContent=textoOriginal||t;
+      });
+  }
+
+  // ===== PRELIMPIEZA (opcional, no bloqueante) =====
+  var CTX=null, LIMITE_MS=8000;
+  function $(id){return document.getElementById(id);}
+  function ocultarReporte(){ if($('reporte'))$('reporte').classList.add('oculto');
+    if($('btn-limpiar'))$('btn-limpiar').classList.add('oculto');
+    if($('estado'))$('estado').classList.add('oculto'); }
+
+  function analizar(file){
+    if(typeof XLSX==='undefined' || typeof Prelimpieza==='undefined'){ ocultarReporte(); return; }
+    CTX=null; ocultarReporte();
+    $('estado').textContent='Revisando el archivo…'; $('estado').classList.remove('oculto');
+    var venció=false;
+    var reloj=setTimeout(function(){venció=true; ocultarReporte();}, LIMITE_MS);
+    file.arrayBuffer().then(function(buf){
+      try{
+        var r=Prelimpieza.leerExcel(buf, XLSX);
+        if(venció)return;
+        if(!r.filas.length) throw new Error('vacío');
+        var diag=Prelimpieza.analizar(r.filas);
+        if(venció)return;
+        clearTimeout(reloj);
+        CTX={wb:r.wb, filas:r.filas, nombreHoja:r.nombreHoja, diag:diag};
+        pintar(diag);
+      }catch(e){ clearTimeout(reloj); ocultarReporte(); }
+    }).catch(function(){ clearTimeout(reloj); ocultarReporte(); });
+  }
+
+  function pintar(d){
+    $('estado').classList.add('oculto');
+    $('n-tapas').textContent=d.tapas.indices.length.toLocaleString('es-AR');
+    $('n-iden').textContent=d.identicas.indices.length;
+    $('n-pos').textContent=d.posibles.sobrantes.toLocaleString('es-AR');
+    if(!d.tapas.indices.length) $('t-tapas').classList.add('oculto');
+    if(!d.identicas.indices.length) $('t-iden').classList.add('oculto');
+    if(!d.posibles.sobrantes) $('t-pos').classList.add('oculto');
+    if(!d.tapas.indices.length && !d.identicas.indices.length && !d.posibles.sobrantes){ ocultarReporte(); return; }
+    $('reporte').classList.remove('oculto');
+    $('btn-limpiar').classList.remove('oculto');
+    actualizar();
+  }
+
+  ['ck-tapas','ck-iden','ck-pos'].forEach(function(id){
+    var el=$(id); if(!el)return;
+    el.addEventListener('change',function(e){
+      e.target.closest('.tar').classList.toggle('on',e.target.checked);
+      actualizar();
+    });
+  });
+
+  function indicesPosibles(d){var o=[];d.posibles.grupos.forEach(function(g){g.indices.slice(1).forEach(function(i){o.push(i);});});return o;}
+
+  function actualizar(){
+    if(!CTX)return; var d=CTX.diag, saco=0;
+    if($('ck-iden').checked) saco+=d.identicas.indices.length;
+    if($('ck-pos').checked)  saco+=d.posibles.sobrantes;
+    $('p-quedan').textContent=(d.total-saco).toLocaleString('es-AR');
+    $('p-saco').textContent=saco?('Saco '+saco+' ficha'+(saco>1?'s':'')+'.'):'No saco ninguna ficha.';
+  }
+
+  // "Limpiar y subir": genera el xlsx limpio y lo manda con la contraseña.
+  var btnLimpiar=$('btn-limpiar');
+  if(btnLimpiar){
+    btnLimpiar.addEventListener('click',function(){
+      if(!clave.value){ mostrarMsg('Poné la contraseña primero.','error'); return; }
+      if(!CTX){ form.requestSubmit(); return; }
+      var opciones={
+        tapas:$('ck-tapas')?$('ck-tapas').checked:false,
+        identicas:$('ck-iden')?$('ck-iden').checked:false,
+        quitarPosibles:($('ck-pos')&&$('ck-pos').checked)?indicesPosibles(CTX.diag):[]
+      };
+      var blob;
+      try{
+        var res=Prelimpieza.aplicar(CTX.filas, opciones, CTX.diag);
+        var out=Prelimpieza.exportarExcel(CTX.wb, CTX.nombreHoja, res.filas, XLSX);
+        blob=new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      }catch(e){ form.requestSubmit(); return; }
+
+      var nombreOrig=(input.files[0]&&input.files[0].name)||'listado.xlsx';
+      var fd=new FormData();
+      fd.append('clave', clave.value);
+      fd.append('archivo', blob, nombreOrig);
+      fd.append('limpiado','1');
+      enviar(fd, btnLimpiar, 'Limpiar y subir');
+    });
+  }
+</script>
+</body>
+</html>
