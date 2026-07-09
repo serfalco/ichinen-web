@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 440" role="img" aria-label="Tapa no disponible">
+  <rect width="300" height="440" fill="#F6F2E8"/>
+  <rect x="14" y="14" width="272" height="412" fill="none" stroke="#d8cfb8" stroke-width="2"/>
+  <line x1="14" y1="64" x2="286" y2="64" stroke="#d8cfb8" stroke-width="1"/>
+  <!-- lomo -->
+  <rect x="14" y="14" width="10" height="412" fill="#B31217" opacity="0.85"/>
+  <text x="158" y="225" text-anchor="middle" font-family="'Cinzel','Times New Roman',serif" font-weight="700" font-size="46" fill="#B31217" opacity="0.9">I</text>
+  <text x="158" y="270" text-anchor="middle" font-family="'Lora','Georgia',serif" font-style="italic" font-size="17" fill="#8a8273">Ichinén</text>
+  <text x="158" y="400" text-anchor="middle" font-family="'Lora','Georgia',serif" font-size="13" fill="#aaa291">tapa no disponible</text>
+</svg>
