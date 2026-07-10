@@ -1,0 +1,20 @@
+name = "ichinen-web"
+main = "worker.js"
+compatibility_date = "2026-07-10"
+
+# Sirve la carpeta public/ como sitio estático
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# Almacenamiento del Excel del catálogo (Workers KV)
+[[kv_namespaces]]
+binding = "DATOS"
+id = "a750f38d8c334140b01ab449a00809c5"
+
+# Datos NO secretos del repo del catálogo (la contraseña y el token van como secretos)
+[vars]
+GITHUB_OWNER = "serfalco"
+GITHUB_REPO = "catalogo-ichinen"
+GITHUB_WORKFLOW = "catalogo.yml"
+GITHUB_REF = "main"
