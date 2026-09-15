@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- /libros-usados-villa-urquiza/ se quitó a propósito: ahora canonicaliza a la
+     home porque las dos páginas competían por las mismas búsquedas locales.
+     Una URL canonicalizada no se ofrece en el sitemap. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ichinen.com.ar/</loc>
-    <lastmod>2026-08-30</lastmod>
+    <lastmod>2026-09-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://ichinen.com.ar/libros-usados-villa-urquiza/</loc>
-    <lastmod>2026-08-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
   </url>
 </urlset>
