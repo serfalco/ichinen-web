@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Consultas por WhatsApp</title>
+<style>
+  :root{--bordo:#B31217;--papel:#F6F2E8;--tinta:#222;--suave:#5b5648;--linea:#d8cfb8;}
+  body{margin:0;background:var(--papel);color:var(--tinta);font-family:Georgia,serif;}
+  main{max-width:640px;margin:0 auto;padding:24px 16px 60px;}
+  h1{color:var(--bordo);font-size:1.4rem;margin:0 0 4px;}
+  .sub{color:var(--suave);margin:0 0 20px;font-size:.95rem;}
+  .tot{font-size:2.6rem;color:var(--bordo);margin:0;}
+  h2{font-size:1rem;margin:28px 0 8px;border-bottom:1px solid var(--linea);padding-bottom:4px;}
+  table{width:100%;border-collapse:collapse;font-size:.92rem;}
+  td{padding:6px 4px;border-bottom:1px solid var(--linea);}
+  td.n{text-align:right;font-variant-numeric:tabular-nums;width:3em;}
+  a{color:var(--bordo);}
+  select{font:inherit;padding:4px;}
+  .vacio{color:var(--suave);font-style:italic;}
+</style>
+</head>
+<body>
+<main>
+  <h1>Consultas por WhatsApp</h1>
+  <p class="sub">Clics en los botones de WhatsApp del sitio y del catálogo. Un clic no es una venta: es alguien que abrió el chat.
+  Mes: <select id="mes"></select></p>
+  <p class="tot" id="total">…</p>
+  <h2>Por día</h2><table id="dias"></table>
+  <h2>Libros más consultados</h2><table id="libros"></table>
+  <h2>Desde qué página</h2><table id="paginas"></table>
+</main>
+<script>
+var NOMBRES={home:'Sitio principal',inicio:'Portada del catálogo',libro:'Ficha de libro',autor:'Página de autor',
+  categoria:'Categoría',editorial:'Editorial','ediciones-antiguas':'Ediciones antiguas',otra:'Otra'};
+var sel=document.getElementById('mes'),hoy=new Date(Date.now()-3*3600e3);
+for(var i=0;i<6;i++){var d=new Date(Date.UTC(hoy.getUTCFullYear(),hoy.getUTCMonth()-i,1)),m=d.toISOString().slice(0,7);
+  var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);}
+function fila(t,n){var tr=document.createElement('tr'),a=document.createElement('td'),b=document.createElement('td');
+  if(t.nodeType)a.appendChild(t);else a.textContent=t;b.className='n';b.textContent=n;tr.appendChild(a);tr.appendChild(b);return tr;}
+function llenar(id,obj,fmt,orden){var tb=document.getElementById(id);tb.innerHTML='';
+  var ks=Object.keys(obj||{});if(!ks.length){tb.innerHTML='<tr><td class="vacio">Todavía nada.</td></tr>';return;}
+  ks.sort(orden||function(x,y){return obj[y]-obj[x];}).slice(0,50).forEach(function(k){tb.appendChild(fila(fmt(k),obj[k]));});}
+function cargar(){fetch('/api/consultas?mes='+sel.value).then(function(r){return r.json();}).then(function(d){
+  document.getElementById('total').textContent=d.total+(d.total===1?' consulta':' consultas');
+  llenar('dias',d.dias,function(k){return k.split('-').reverse().join('/');},function(x,y){return x<y?1:-1;});
+  llenar('libros',d.libros,function(k){var a=document.createElement('a');a.href='https://catalogo.ichinen.com.ar/libro/'+k+'.html';
+    a.target='_blank';a.textContent=k.replace(/-/g,' ');return a;});
+  llenar('paginas',d.paginas,function(k){return NOMBRES[k]||k;});
+}).catch(function(){document.getElementById('total').textContent='No se pudieron cargar los datos.';});}
+sel.onchange=cargar;cargar();
+</script>
+</body>
+</html>

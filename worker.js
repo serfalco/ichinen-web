@@ -108,6 +108,56 @@ async function servirExcel(env) {
   });
 }
 
+// --- Contador de consultas por WhatsApp ---------------------------------------
+// Cuenta clics en los botones de WhatsApp del sitio y del catálogo. Sin cookies
+// ni datos personales: solo qué página y qué libro, agregados por mes en KV.
+const ORIGENES_OK = ["https://catalogo.ichinen.com.ar", "https://ichinen.com.ar",
+                     "https://www.ichinen.com.ar"];
+
+function cors(request) {
+  const o = request.headers.get("Origin") || "";
+  return ORIGENES_OK.includes(o) ? { "Access-Control-Allow-Origin": o } : {};
+}
+
+function fechaAR() {
+  // Día en hora de Buenos Aires (UTC-3, sin horario de verano)
+  return new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10);
+}
+
+function limpiar(t, max) {
+  return String(t || "").toLowerCase().replace(/[^a-z0-9\-\/\.]/g, "").slice(0, max);
+}
+
+async function registrarClic(request, env) {
+  const h = cors(request);
+  if (!env.DATOS) return new Response(null, { status: 204, headers: h });
+  let d = {};
+  try { d = JSON.parse(await request.text()); } catch { /* cuerpo vacío o roto */ }
+  const libro = limpiar(d.l, 90);
+  const pagina = limpiar(d.p, 40) || "otra";
+  const dia = fechaAR();
+  const clave = "consultas:" + dia.slice(0, 7);
+  const actual = (await env.DATOS.get(clave, { type: "json" })) ||
+                 { total: 0, dias: {}, paginas: {}, libros: {} };
+  actual.total += 1;
+  actual.dias[dia] = (actual.dias[dia] || 0) + 1;
+  actual.paginas[pagina] = (actual.paginas[pagina] || 0) + 1;
+  if (libro) actual.libros[libro] = (actual.libros[libro] || 0) + 1;
+  await env.DATOS.put(clave, JSON.stringify(actual));
+  return new Response(null, { status: 204, headers: h });
+}
+
+async function verConsultas(url, env) {
+  if (!env.DATOS) return json({ ok: false }, 500);
+  const mes = /^\d{4}-\d{2}$/.test(url.searchParams.get("mes") || "")
+    ? url.searchParams.get("mes") : fechaAR().slice(0, 7);
+  const datos = (await env.DATOS.get("consultas:" + mes, { type: "json" })) ||
+                { total: 0, dias: {}, paginas: {}, libros: {} };
+  return new Response(JSON.stringify({ mes, ...datos }), {
+    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+  });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -117,6 +167,16 @@ export default {
         return json({ ok: false, mensaje: "Método no permitido." }, 405);
       }
       return subirCatalogo(request, env);
+    }
+
+    if (url.pathname === "/api/clic") {
+      if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(request) });
+      if (request.method !== "POST") return new Response(null, { status: 405 });
+      return registrarClic(request, env);
+    }
+
+    if (url.pathname === "/api/consultas") {
+      return verConsultas(url, env);
     }
 
     if (url.pathname === "/datos/listado.xlsx") {
