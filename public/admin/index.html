@@ -163,8 +163,10 @@
   ['dragleave','drop'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove('over');});});
   drop.addEventListener('drop',function(ev){if(ev.dataTransfer.files.length){input.files=ev.dataTransfer.files;mostrar();}});
   input.addEventListener('change',mostrar);
+  var FORMATO_MALO=false;
   function mostrar(){
-    if(input.files.length){nombre.textContent=input.files[0].name;btn.disabled=false;analizar(input.files[0]);}
+    FORMATO_MALO=false;
+    if(input.files.length){nombre.textContent=input.files[0].name;btn.disabled=false;cajaMsg.classList.add('oculto');analizar(input.files[0]);}
     else{nombre.textContent='';btn.disabled=true;}
   }
 
@@ -173,6 +175,7 @@
   form.addEventListener('submit',function(ev){
     ev.preventDefault();
     if(!input.files.length){ mostrarMsg('Elegí un archivo primero.','error'); return; }
+    if(FORMATO_MALO){ avisarFormato(); return; }
     var fd=new FormData();
     fd.append('clave', clave.value);
     fd.append('archivo', input.files[0], input.files[0].name);
@@ -215,6 +218,12 @@
     file.arrayBuffer().then(function(buf){
       try{
         var r=Prelimpieza.leerExcel(buf, XLSX);
+        clearTimeout(reloj);
+        // Validación de formato: el catálogo se arma con la hoja "Libros".
+        if(r.wb.SheetNames.indexOf('Libros')===-1){
+          FORMATO_MALO=r.wb.SheetNames; ocultarReporte(); avisarFormato(); return;
+        }
+        reloj=setTimeout(function(){venció=true; ocultarReporte();}, LIMITE_MS);
         if(venció)return;
         if(!r.filas.length) throw new Error('vacío');
         var diag=Prelimpieza.analizar(r.filas);
@@ -224,6 +233,22 @@
         pintar(diag);
       }catch(e){ clearTimeout(reloj); ocultarReporte(); }
     }).catch(function(){ clearTimeout(reloj); ocultarReporte(); });
+  }
+
+  function avisarFormato(){
+    var hojas=(FORMATO_MALO&&FORMATO_MALO.join)?FORMATO_MALO.join(', '):'';
+    var esPublicaciones=hojas.indexOf('Publicaciones')!==-1;
+    mostrarMsg(
+      'No se subió nada: este Excel no es el listado de libros.\n\n'+
+      (esPublicaciones
+        ? 'Es la planilla de «Publicaciones» de Mercado Libre, la que sirve para cambiar precios y stock. Solo trae título, precio y condición: no tiene autor, editorial ni ISBN, y sin eso el catálogo no se puede armar.\n\n'
+        : 'El archivo tiene estas hojas: '+hojas+'. Ninguna se llama «Libros», que es donde están los datos de cada libro.\n\n')+
+      'Hace falta la otra planilla de Mercado Libre: la de la categoría Libros, la misma que se subió las veces anteriores. Se reconoce porque al abrirla tiene una hoja llamada «Libros» con columnas de autor, editorial e ISBN.\n\n'+
+      'Tranquilo: el catálogo de la web sigue funcionando con el último listado bueno. Solo no se van a ver los libros nuevos hasta que se suba el archivo correcto.',
+      'error');
+    cajaMsg.style.whiteSpace='pre-line';
+    btn.disabled=true;
+    window.scrollTo(0,0);
   }
 
   function pintar(d){
