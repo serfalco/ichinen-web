@@ -40,6 +40,13 @@
   .msg{padding:13px 15px;margin-bottom:20px;font-size:.92rem;border:1px solid;line-height:1.5;}
   .msg.ok{background:#eaf6ee;border-color:#9ed6b3;color:#1f6c3b;}
   .msg.error{background:#fbeaea;border-color:#e2a3a3;color:#a32d2d;}
+  .msg p{margin:8px 0;} .msg ul{margin:6px 0 6px 20px;padding:0;}
+  .ejemplo{overflow-x:auto;margin:8px 0;background:#fff;border:1px solid #e2a3a3;}
+  .ejemplo table{border-collapse:collapse;font-size:.74rem;color:#333;white-space:nowrap;}
+  .ejemplo th{background:#eee;color:#666;font-weight:normal;padding:3px 8px;border:1px solid #ddd;}
+  .ejemplo td{padding:4px 8px;border:1px solid #ddd;}
+  .ejemplo td.clave{background:#fff3c4;font-weight:bold;}
+  .msg .nota{font-size:.82rem;font-style:italic;}
   .pie{text-align:center;margin-top:20px;}
   .pie a{font-size:.78rem;color:var(--suave);text-decoration:none;}
   .pie a:hover{color:var(--bordo);}
@@ -163,9 +170,9 @@
   ['dragleave','drop'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove('over');});});
   drop.addEventListener('drop',function(ev){if(ev.dataTransfer.files.length){input.files=ev.dataTransfer.files;mostrar();}});
   input.addEventListener('change',mostrar);
-  var FORMATO_MALO=false;
+  var FORMATO_MALO=false, FALTAN=null;
   function mostrar(){
-    FORMATO_MALO=false;
+    FORMATO_MALO=false; FALTAN=null; cajaMsg.style.whiteSpace='';
     if(input.files.length){nombre.textContent=input.files[0].name;btn.disabled=false;cajaMsg.classList.add('oculto');analizar(input.files[0]);}
     else{nombre.textContent='';btn.disabled=true;}
   }
@@ -175,7 +182,7 @@
   form.addEventListener('submit',function(ev){
     ev.preventDefault();
     if(!input.files.length){ mostrarMsg('Elegí un archivo primero.','error'); return; }
-    if(FORMATO_MALO){ avisarFormato(); return; }
+    if(FORMATO_MALO){ if(FALTAN) avisarColumnas(FALTAN); else avisarFormato(); return; }
     var fd=new FormData();
     fd.append('clave', clave.value);
     fd.append('archivo', input.files[0], input.files[0].name);
@@ -223,6 +230,11 @@
         if(r.wb.SheetNames.indexOf('Libros')===-1){
           FORMATO_MALO=r.wb.SheetNames; ocultarReporte(); avisarFormato(); return;
         }
+        // Validación de columnas: el catálogo necesita estas para armar cada ficha.
+        var faltan=columnasFaltantes(r.wb.Sheets['Libros']);
+        if(faltan.length){
+          FORMATO_MALO=true; FALTAN=faltan; ocultarReporte(); avisarColumnas(faltan); return;
+        }
         reloj=setTimeout(function(){venció=true; ocultarReporte();}, LIMITE_MS);
         if(venció)return;
         if(!r.filas.length) throw new Error('vacío');
@@ -233,6 +245,43 @@
         pintar(diag);
       }catch(e){ clearTimeout(reloj); ocultarReporte(); }
     }).catch(function(){ clearTimeout(reloj); ocultarReporte(); });
+  }
+
+  // Columnas que el catálogo necesita (código en la planilla → nombre en castellano).
+  var COLUMNAS=[
+    ['VARIATION_ID','Variación ID'],
+    ['TITLE','Título'],
+    ['GTIN','ISBN'],
+    ['BOOK_TITLE','Título del libro'],
+    ['AUTHOR','Autor'],
+    ['BOOK_PUBLISHER','Editorial del libro']
+  ];
+  function columnasFaltantes(ws){
+    var fila=(XLSX.utils.sheet_to_json(ws,{header:1,range:0})[0]||[]).map(function(c){return String(c||'').trim();});
+    var falt=COLUMNAS.filter(function(c){return fila.indexOf(c[0])===-1;});
+    // El lector del catálogo busca «Variación ID» en la primera columna.
+    if(!falt.length && fila[0]!=='VARIATION_ID') falt=[COLUMNAS[0]];
+    return falt;
+  }
+  function esc(t){return String(t).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+  function avisarColumnas(faltan){
+    var lista=faltan.map(function(c){return '<li>'+esc(c[1])+'</li>';}).join('');
+    cajaMsg.innerHTML=
+      '<b>No se subió nada: al archivo le faltan columnas.</b>'+
+      '<p>Tiene la hoja «Libros», pero se bajó de Mercado Libre con menos datos de los necesarios. Faltan:</p>'+
+      '<ul>'+lista+'</ul>'+
+      '<p>Sin esas columnas el catálogo no puede armar el título ni la página de cada libro.</p>'+
+      '<p><b>Qué hacer:</b> volvé a descargar de Mercado Libre la planilla de la categoría Libros con <b>todas</b> las columnas. Si te deja elegir qué datos bajar, marcalos todos. Después subila acá de nuevo.</p>'+
+      '<p><b>Así tiene que empezar la primera fila</b> (la de los nombres en castellano) del archivo correcto:</p>'+
+      '<div class="ejemplo"><table><tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>…</th></tr>'+
+      '<tr><td class="clave">Variación ID</td><td>Dominio</td><td>Categoría</td><td>Categoría CBT</td><td>Título</td><td>ISBN</td><td class="clave">Título del libro</td><td>…</td></tr>'+
+      '<tr><td></td><td>MLA-BOOKS</td><td>MLA412445</td><td></td><td>Atenas, Guía National Geographic 2011…</td><td>9789870724308</td><td>Atenas</td><td>…</td></tr></table></div>'+
+      '<p class="nota">La primera columna tiene que ser «Variación ID» (puede estar vacía abajo) y tiene que estar «Título del libro».</p>'+
+      '<p>Tranquilo: la web sigue funcionando con el último listado bueno. Solo faltan los libros nuevos hasta que se suba el archivo correcto.</p>';
+    cajaMsg.className='msg error';
+    cajaMsg.style.whiteSpace='normal';
+    btn.disabled=true;
+    window.scrollTo(0,0);
   }
 
   function avisarFormato(){
