@@ -28,9 +28,8 @@
 <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 
 <!-- ===== Tipografías ===== -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/lora-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/cinzel-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 
 <link rel="stylesheet" href="css/style.css">
 
@@ -234,6 +233,19 @@
     </div>
     <p class="center" style="margin-top:24px;">
       <a class="btn btn--solid" href="https://catalogo.ichinen.com.ar/">Ver las 17 categorías</a>
+    </p>
+  </div>
+</section>
+
+<!-- ===================== LIBROS DE LA SEMANA ===================== -->
+<!-- worker.js completa #libros-semana con destacados.json del catálogo y saca el hidden. -->
+<section class="section" id="libros-semana" hidden>
+  <div class="wrap">
+    <p class="eyebrow center">Esta semana en el local</p>
+    <h2 class="center">Algunos libros usados que tenemos hoy</h2>
+    <div class="libros" id="libros-grid"></div>
+    <p class="center" style="margin-top:24px;">
+      <a class="btn btn--solid" href="https://catalogo.ichinen.com.ar/">Ver todo el catálogo</a>
     </p>
   </div>
 </section>

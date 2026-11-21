@@ -14,3 +14,7 @@
 
 /js/*
   Cache-Control: public, max-age=86400
+
+# Tipografías: el contenido de cada archivo no cambia nunca.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable

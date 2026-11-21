@@ -6,6 +6,8 @@ compatibility_date = "2026-07-10"
 [assets]
 directory = "./public"
 binding = "ASSETS"
+# La home pasa por el worker para insertar los "Libros de la semana" (ver worker.js).
+run_worker_first = ["/"]
 
 # Almacenamiento del Excel del catálogo (Workers KV)
 [[kv_namespaces]]

@@ -158,6 +158,42 @@ async function verConsultas(url, env) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Home: tira "Libros de la semana". El catálogo publica destacados.json (12
+// libros con tapa que cambian cada semana) y acá se insertan en el HTML del
+// lado del servidor, así Google ve los enlaces a las fichas sin JavaScript.
+// Si el catálogo no responde, la home sale igual, con la sección oculta.
+// wrangler.toml: run_worker_first = ["/"] para que "/" pase por acá.
+// ---------------------------------------------------------------------------
+const DESTACADOS_URL = "https://catalogo.ichinen.com.ar/destacados.json";
+
+function escHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[c]);
+}
+
+async function homeConLibros(request, env) {
+  const res = await env.ASSETS.fetch(request);
+  if (!res.ok || !(res.headers.get("Content-Type") || "").includes("text/html")) return res;
+  let libros = [];
+  try {
+    const r = await fetch(DESTACADOS_URL, { cf: { cacheTtl: 3600, cacheEverything: true } });
+    if (r.ok) libros = ((await r.json()).libros || []).filter((l) =>
+      typeof l.u === "string" && l.u.startsWith("https://catalogo.ichinen.com.ar/") &&
+      typeof l.img === "string" && l.img.startsWith("https://catalogo.ichinen.com.ar/"));
+  } catch (e) { libros = []; }
+  if (!libros.length) return res;
+  const tarjetas = libros.map((l) =>
+    `<a class="libro" href="${escHtml(l.u)}">` +
+    `<img src="${escHtml(l.img)}" alt="Tapa de ${escHtml(l.t)}" width="160" height="240" loading="lazy" decoding="async">` +
+    `<span class="t">${escHtml(l.t)}</span><span class="a">${escHtml(l.a)}</span></a>`).join("");
+  return new HTMLRewriter()
+    .on("#libros-semana", { element(el) { el.removeAttribute("hidden"); } })
+    .on("#libros-grid", { element(el) { el.setInnerContent(tarjetas, { html: true }); } })
+    .transform(res);
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -184,6 +220,10 @@ export default {
     }
 
     // Todo lo demás: archivos estáticos de la carpeta public/
+    if (url.pathname === "/" && (request.method === "GET" || request.method === "HEAD")) {
+      return homeConLibros(request, env);
+    }
+
     return env.ASSETS.fetch(request);
   },
 };
