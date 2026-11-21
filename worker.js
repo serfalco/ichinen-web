@@ -178,7 +178,7 @@ async function homeConLibros(request, env) {
   if (!res.ok || !(res.headers.get("Content-Type") || "").includes("text/html")) return res;
   let libros = [];
   try {
-    const r = await fetch(DESTACADOS_URL, { cf: { cacheTtl: 3600, cacheEverything: true } });
+    const r = await fetch(DESTACADOS_URL, { cf: { cacheTtlByStatus: { "200-299": 3600, "404": 60, "500-599": 0 }, cacheEverything: true } });
     if (r.ok) libros = ((await r.json()).libros || []).filter((l) =>
       typeof l.u === "string" && l.u.startsWith("https://catalogo.ichinen.com.ar/") &&
       typeof l.img === "string" && l.img.startsWith("https://catalogo.ichinen.com.ar/"));
